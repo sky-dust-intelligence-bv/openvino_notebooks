@@ -5,26 +5,30 @@ on:
   pull_request:
     branches:
     - 'main'
+    - '2021.4'
     paths:
     - 'notebooks/**.ipynb'
     - 'notebooks/**.py'
     - 'requirements.txt'
     - '.ci/*'
-    - '.github/workflows/nbval.yml'
+    - '.github/workflows/*.yml'
+    - '.github/workflows/.env'
   push:
     branches:
     - 'main'
+    - '2021.4'
     paths:
     - 'notebooks/**.ipynb'
     - 'notebooks/**.py'
     - 'requirements.txt'
     - '.ci/*'
-    - '.github/workflows/nbval.yml'
+    - '.github/workflows/*.yml'
+    - '.github/workflows/.env'
   schedule:
     - cron:  '30 8 * * *'
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.run_id }}
   cancel-in-progress: true
 
 jobs:
@@ -33,15 +37,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-18.04, ubuntu-20.04, windows-2019, macos-10.15, macos-11]
-        python: [3.6, 3.7, 3.8]
-        exclude:
-        - os: macos-11
-          python: 3.6
-        - os: macos-10.15
-          python: 3.7
-        - os: macos-10.15
-          python: 3.8
+        os: [ubuntu-20.04, windows-2019, macos-11, macos-12]
+        python: [3.7, 3.8, 3.9]
     steps:
 
     #### Installation/preparation ####
@@ -119,7 +116,7 @@ jobs:
     - name: Cache openvino packages
       if: steps.cachepip.outputs.cache-hit != 'true'
       run: |
-        python -m pip install --upgrade pip==21.3.*
+        python -m pip install --upgrade pip
         mkdir pipcache
         python -m pip install --cache-dir pipcache --no-deps openvino openvino-dev nncf
         cp -r pipcache pipcache_openvino
@@ -141,7 +138,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip==21.3.*
+        python -m pip install --upgrade pip
         python -m pip install -r .ci/dev-requirements.txt --cache-dir pipcache
         python -m ipykernel install --user --name openvino_env
 
@@ -182,8 +179,23 @@ jobs:
 
     # Main notebooks test. Verifies that all notebooks run without errors
     - name: Analysing with nbval
+      if: runner.os == 'Windows'
       run: |
-        python -m pytest --nbval -x -k "test_ or notebook_utils" --durations 10
+            chmod +x .ci/validate_notebooks.sh
+            .ci/validate_notebooks.sh
+      shell: bash
+    - name: Analysing with nbval
+      if: runner.os == 'Linux'
+      run: |
+            chmod +x .ci/validate_notebooks.sh
+            .ci/validate_notebooks.sh 107-speech-recognition-quantization
+      shell: bash
+    - name: Analysing with nbval
+      if: runner.os == 'MacOS'
+      run: |
+        chmod +x .ci/validate_notebooks.sh
+        .ci/validate_notebooks.sh 107-speech-recognition-quantization 114-quantization-simplified-mode 115-async-api
+      shell: bash
 
     # Show the cache after running the notebooks
     - name: Show cache

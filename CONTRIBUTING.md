@@ -47,7 +47,7 @@ To do this, there are a few requirements that all notebooks need to pass.
 
 1. The notebooks work on Windows, macOS and Linux (see [supported operating
    systems](https://github.com/openvinotoolkit/openvino_notebooks#%EF%B8%8F-system-requirements))
-   with Python 3.6, 3.7 and 3.8.
+   with Python 3.6, 3.7, 3.8 and 3.9.
 2. As a rule, the notebooks do not require installation of additional software that is not installable by
    `pip`. We do not assume that users have installed XCode Dev Tools, Visual C++ redistributable,
    cmake, etc. Please discuss if your notebook does need C++ - there are exceptions to this rule.
@@ -71,6 +71,9 @@ To do this, there are a few requirements that all notebooks need to pass.
    not just to show the output of a model, but to teach how OpenVINO works, by interacting with it.
    Not all notebooks need to be full-fledged tutorials, but it is always good to explain steps and
    add comments.
+8. Respect for human rights is rooted in our [values at Intel](https://www.intel.com/content/www/us/en/policy/policy-human-rights.html). 
+   We will not accept contributions that perform facial recognition or analyze demographics like age
+   and gender. 
 
 ### Implementation choices
 
@@ -79,9 +82,7 @@ To do this, there are a few requirements that all notebooks need to pass.
    dependencies and will only add them if they add real value. Do not let this discourage you if
    you do want to include a certain package! If it is necessary, or can be useful for other
    notebooks too, we are open to adding it.
-2. All notebooks are saved with the `openvino_env` kernel. This ensures that there is never a
-   conflict between a user's other Python installations and the notebook installation.
-3. The notebooks are located in the "notebooks" subdirectory. There is a subdirectory for every
+2. The notebooks are located in the "notebooks" subdirectory. There is a subdirectory for every
    notebook, with generally the same base name as the notebook.  For example, the
    001-hello-world.ipynb notebook can be found in the 001-hello-world directory.
    - See the [Notebook naming](#notebook-naming) section below, for the
@@ -91,11 +92,11 @@ To do this, there are a few requirements that all notebooks need to pass.
    - Add any supporting files to this subdirectory too. Supporting files should
      be small (generally less than 5MB). Larger images, datasets and model
      files should be downloaded from within the notebook.
-4. All related files, with the exception of Open Model Zoo models, should be saved to the notebook subdirectory,
+3. All related files, with the exception of Open Model Zoo models, should be saved to the notebook subdirectory,
    even if that means that there is a small amount of duplication. For Open Model Zoo models, see the directory
    structure in the [104 Model Tools](https://github.com/openvinotoolkit/openvino_notebooks/tree/main/notebooks/104-model-tools)
    notebook.
-5. The notebooks should provide an easy way to clean up the downloaded data, for example with a
+4. The notebooks should provide an easy way to clean up the downloaded data, for example with a
    commented-out cell at the end of the notebook.
 
 ### Coding Guidelines
@@ -174,6 +175,26 @@ To maintain consistency between notebooks, please follow the directory structure
 ```
 
 In case of output provided by Notebook please create folder ```output``` on the same level as readme file.
+
+#### Recommendations for File Structure
+
+- Model
+
+We recommend to load the model using url otherwise we can accept the model placed in the model folder which will be evaluated further for storage constraints.
+
+- Data
+
+We recommend to use embedded URL for image/video data since GitHub limits the size of files allowed in repositories.
+Follow the below instructions to create embedded URL in GitHub:
+  - Go to any issue on GitHub.
+  - In the comment section, you can attach files. Just drag/drop, select or paste your image.
+  - Copy the code/link displayed in the text area
+
+- License
+
+If you download or include a model, it must be licensed under an open source license like Apache 2.0 which allows for redistribution, modification and commercial use. 
+
+Any datasets, images or videos used for fine-tuning, quantization or inference inside a notebook must be licensed under Creative Commons 4.0 (CC 4.0) with permission for commercial use. If commercial use is not allowed, but the data is under CC 4.0, special approval will be required. Please let us know in your pull request if your data has any restrictions on use.
 
 ### Notebook utils
 
